@@ -3,7 +3,8 @@ require("dotenv").config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require ('mongoose')
-const authRout = require("./routes/auth")
+const authRout = require("./routes/auth");
+const cookeiParser = require('cookie-parser');
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 // app.use(express.urlencoded());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
+app.use(cookeiParser())
 
 app.get("/api", (req, res)=>{
     res.send("Full stack React Express server");
