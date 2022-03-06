@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require ('mongoose')
 const authRout = require("./routes/auth");
 const cookeiParser = require('cookie-parser');
+const toDosRoute = require('./routes/Todos')
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/api", (req, res)=>{
 
 
 app.use("/api/auth", authRout);
+app.use("/api/todos", toDosRoute)
 
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>{
