@@ -53,6 +53,18 @@ router.post("/register", async(req, res)=>{
         //save user to the database
         const savedUser = await newUser.save();
 
+        const payload = {userId: savedUser._id};
+
+            const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: "7d"
+            });
+
+            res.cookie("access-token", token, {
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production"
+            });
+
         //
         const userToReturn = {...savedUser._doc}
         delete userToReturn.password;
@@ -77,7 +89,7 @@ router.post("/login", async (req, res)=>{
         //check for the user
         const user = await User.findOne({
             email: new RegExp("^" + req.body.email + "$", "i")
-        })
+        });
 
         if(!user){
             return res.status(400).json({error: 'There was a problem with your login credentials'})
@@ -129,7 +141,27 @@ router.get("/current", requiresAuth, (req, res)=>{
     }
 
     return res.json(req.user)
-})
+});
+
+
+
+//@route PUT/api/auth/logout
+//@desc Logout user
+//@access Prive
+
+router.put("/logout", requiresAuth, async(req, res)=>{
+
+    try {
+        res.clearCookie("access-token");
+
+        return res.json({success: true})
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(err.message)
+        
+    }
+
+});
 
 
 module.exports = router
